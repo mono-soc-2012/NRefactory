@@ -336,7 +336,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							endIndex - startIndex - 2
 						) : null;
 						if (!string.IsNullOrEmpty(tag) && commentTags.IndexOf(tag) >= 0) {
-							document.Insert(offset, "</" + tag + ">");
+							document.Insert(offset, "</" + tag + ">", AnchorMovementType.BeforeInsertion);
 						}
 					}
 					return null;
@@ -1226,7 +1226,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (currentMember != null || node is Expression) {
 					AddKeywords(wrapper, statementStartKeywords);
 					AddKeywords(wrapper, expressionLevelKeywords);
-					if (node is TypeDeclaration)
+					if (node == null || node is TypeDeclaration)
 						AddKeywords(wrapper, typeLevelKeywords);
 				} else if (currentType != null) {
 					AddKeywords(wrapper, typeLevelKeywords);
@@ -1249,13 +1249,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					AddKeywords(wrapper, parameterTypePredecessorKeywords);
 				}
 			}
-
 			AddKeywords(wrapper, primitiveTypesKeywords);
-			if (currentMember != null) {
+			if (currentMember != null && (node is IdentifierExpression || node is SimpleType) && (node.Parent is ExpressionStatement || node.Parent is ForeachStatement || node.Parent is UsingStatement)) {
 				wrapper.AddCustom("var");
+				wrapper.AddCustom("dynamic");
 			} 
 			wrapper.Result.AddRange(factory.CreateCodeTemplateCompletionData());
-			
 			if (node != null && node.Role == Roles.Argument) {
 				var resolved = ResolveExpression(node.Parent);
 				var invokeResult = resolved != null ? resolved.Item1 as CSharpInvocationResolveResult : null;
@@ -2213,6 +2212,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					);
 				}
 			}
+
+			foreach (var method in resolveResult.Methods) {
+				if (parameter < method.Parameters.Count && method.Parameters [parameter].Type.Kind == TypeKind.Delegate) {
+					AutoSelect = false;
+					AutoCompleteEmptyMatch = false;
+				}
+				foreach (var p in method.Parameters) {
+					result.AddNamedParameterVariable(p);
+				}
+			}
+
 			if (!controlSpace) {
 				if (addedEnums.Count + addedDelegates.Count == 0) {
 					return Enumerable.Empty<ICompletionData>();
@@ -2853,9 +2863,54 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				"value"
 			}
 			);
-		
+
+		string GetLastClosingXmlCommentTag ()
+		{
+			var line = document.GetLineByNumber(location.Line);
+
+		restart:
+			string lineText = document.GetText(line);
+			if (!lineText.Trim ().StartsWith ("///"))
+				return null;
+			int startIndex = Math.Min(location.Column - 1, lineText.Length - 1) - 1;
+			while (startIndex > 0 && lineText [startIndex] != '<') {
+				--startIndex;
+				if (lineText [startIndex] == '/') {
+					// already closed.
+					startIndex = -1;
+					break;
+				}
+			}
+			if (startIndex < 0 && line.PreviousLine != null) {
+				line = line.PreviousLine;
+				goto restart;
+			}
+
+			if (startIndex >= 0) {
+				int endIndex = startIndex;
+				while (endIndex + 1 < lineText.Length && lineText [endIndex] != '>' && !Char.IsWhiteSpace (lineText [endIndex + 1])) {
+					endIndex++;
+				}
+				string tag = endIndex - startIndex - 1 > 0 ? lineText.Substring(
+					startIndex + 1,
+					endIndex - startIndex - 1
+				) : null;
+				if (!string.IsNullOrEmpty(tag) && commentTags.IndexOf(tag) >= 0) {
+					return tag;
+				}
+			}
+			return null;
+		}
+
 		IEnumerable<ICompletionData> GetXmlDocumentationCompletionData()
 		{
+			var closingTag = GetLastClosingXmlCommentTag ();
+			if (closingTag != null) {
+				yield return factory.CreateLiteralCompletionData(
+					"/" + closingTag + ">"
+				);
+			}
+
 			yield return factory.CreateLiteralCompletionData(
 				"c",
 				"Set text in a code-like font"
@@ -2952,6 +3007,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				"value",
 				"Describe a property"
 			);
+
 		}
 		#endregion
 		
@@ -2988,7 +3044,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			"true", "false", "typeof", "checked", "unchecked", "from", "break", "checked",
 			"unchecked", "const", "continue", "do", "finally", "fixed", "for", "foreach",
 			"goto", "if", "lock", "return", "stackalloc", "switch", "throw", "try", "unsafe", 
-			"using", "while", "yield", "dynamic", "var", "dynamic",
+			"using", "while", "yield",
 			"catch"
 		};
 		static string[] globalLevelKeywords = new string [] {
