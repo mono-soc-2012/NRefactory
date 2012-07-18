@@ -107,12 +107,15 @@
     <Compile Include="CSharp\CodeIssues\LocalVariableHidesMemberIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\LocalVariableNotUsedIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\LocalVariableOnlyAssignedIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\MultipleEnumerationIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ParameterHidesMemberIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ParameterNotUsedIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ParameterOnlyAssignedIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\RedundantAssignmentIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantElseIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantFieldInitializerIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\TypeParameterNotUsedIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\UnreachableCodeIssueTests.cs" />
     <Compile Include="CSharp\CSharpAmbienceTests.cs" />
     <Compile Include="CSharp\CodeDomConvertVisitorTests.cs" />
     <Compile Include="CSharp\InsertParenthesesVisitorTests.cs" />
@@ -190,6 +193,7 @@
     <Compile Include="CSharp\Resolver\CastTests.cs" />
     <Compile Include="CSharp\Resolver\ComTests.cs" />
     <Compile Include="CSharp\Resolver\ConditionalOperatorTests.cs" />
+    <Compile Include="CSharp\Resolver\DynamicTests.cs" />
     <Compile Include="CSharp\Resolver\ExtensionMethodTests.cs" />
     <Compile Include="CSharp\Resolver\FindReferencesTest.cs" />
     <Compile Include="CSharp\Resolver\InvocationTests.cs" />
@@ -221,6 +225,7 @@
     <Compile Include="TypeSystem\CecilLoaderTests.cs" />
     <Compile Include="TypeSystem\GetAllBaseTypesTest.cs" />
     <Compile Include="TypeSystem\GetMembersTests.cs" />
+    <Compile Include="TypeSystem\LazyLoadedCecilLoaderTests.cs" />
     <Compile Include="TypeSystem\ReflectionHelperTests.cs" />
     <Compile Include="TypeSystem\SerializedCecilLoaderTests.cs" />
     <Compile Include="TypeSystem\StructureTests.cs" />

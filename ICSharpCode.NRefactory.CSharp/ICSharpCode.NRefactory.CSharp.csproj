@@ -14,7 +14,7 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\ICSharpCode.NRefactory.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
@@ -45,7 +45,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -265,8 +265,11 @@
     <Compile Include="Refactoring\CodeIssues\CompareFloatWithEqualityOperatorIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ExplicitConversionInForEachIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ForControlVariableNotModifiedIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\MultipleEnumerationIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\RedundantAssignmentIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantElseIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantFieldInitializerIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\UnreachableCodeIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\VariableHidesMemberIssue\LocalVariableHidesMemberIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\VariableHidesMemberIssue\ParameterHidesMemberIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\VariableHidesMemberIssue\VariableHidesMemberIssue.cs" />
@@ -285,7 +288,10 @@
     <Compile Include="Refactoring\RefactoringContext.cs" />
     <Compile Include="Refactoring\Script.cs" />
     <Compile Include="Refactoring\TypeSystemAstBuilder.cs" />
+    <Compile Include="Refactoring\VariableReferenceGraph.cs" />
     <Compile Include="Resolver\CompositeResolveVisitorNavigator.cs" />
+    <Compile Include="Resolver\DynamicInvocationResolveResult.cs" />
+    <Compile Include="Resolver\DynamicMemberResolveResult.cs" />
     <Compile Include="Resolver\CSharpConversions.cs" />
     <Compile Include="Resolver\CSharpAstResolver.cs" />
     <Compile Include="Resolver\CSharpInvocationResolveResult.cs" />
@@ -411,6 +417,7 @@
     <Compile Include="Refactoring\CodeActions\ImplementAbstractMembersAction.cs" />
     <Compile Include="Refactoring\CodeActions\ExtractFieldAction.cs" />
     <Compile Include="Completion\ICompletionContextProvider.cs" />
+    <Compile Include="Refactoring\CodeActions\ExtractMethod\VariableUsageAnalyzation.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
