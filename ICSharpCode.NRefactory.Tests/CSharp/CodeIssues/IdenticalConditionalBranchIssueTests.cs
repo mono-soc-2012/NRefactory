@@ -1,10 +1,10 @@
+﻿// 
+// IdenticalConditionalBranchIssueTests.cs
 // 
-// ImplementInterfaceExplicitTests.cs
-//  
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//      Mansheng Yang <lightyang0@gmail.com>
 // 
-// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2012 Mansheng Yang <lightyang0@gmail.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,34 +23,37 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using NUnit.Framework;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
 
-namespace ICSharpCode.NRefactory.CSharp.CodeActions
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+using NUnit.Framework;
+
+namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
 	[TestFixture]
-	public class ImplementInterfaceExplicitTests : ContextActionTestBase
+	public class IdenticalConditionalBranchIssueTests : InspectionActionTestBase
 	{
-		[Test()]
-		public void TestSimpleInterface()
+		[Test]
+		public void Test ()
 		{
-			Test<ImplementInterfaceExplicitAction>(@"using System;
-class Foo : $IDisposable
+			var input = @"
+class TestClass
 {
-}
-", @"using System;
-class Foo : IDisposable
-{
-	#region IDisposable implementation
-	void IDisposable.Dispose ()
+	void TestMethod (int i)
 	{
-		throw new NotImplementedException ();
+		var a = i > 0 ? 1 + 1 : 1 + 1;
+		var b = i > 1 ? 1 : 2;
 	}
-	#endregion
-}
-");
+}";
+			var output = @"
+class TestClass
+{
+	void TestMethod (int i)
+	{
+		var a = 1 + 1;
+		var b = i > 1 ? 1 : 2;
+	}
+}";
+			Test<IdenticalConditionalBranchIssue> (input, 1, output);
 		}
 	}
 }
-

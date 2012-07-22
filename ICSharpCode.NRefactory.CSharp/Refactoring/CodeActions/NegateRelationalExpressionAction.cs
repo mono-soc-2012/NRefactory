@@ -1,10 +1,10 @@
+﻿// 
+// NegateRelationalExpressionAction.cs
 // 
-// ImplementInterfaceExplicitTests.cs
-//  
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//      Mansheng Yang <lightyang0@gmail.com>
 // 
-// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2012 Mansheng Yang <lightyang0@gmail.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,34 +23,24 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using NUnit.Framework;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
 
-namespace ICSharpCode.NRefactory.CSharp.CodeActions
+namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[TestFixture]
-	public class ImplementInterfaceExplicitTests : ContextActionTestBase
+	[ContextAction ("Negate an relational expression", Description = "Negate an relational expression.")]
+	public class NegateRelationalExpressionAction : SpecializedCodeAction<BinaryOperatorExpression>
 	{
-		[Test()]
-		public void TestSimpleInterface()
+
+		protected override CodeAction GetAction (RefactoringContext context, BinaryOperatorExpression node)
 		{
-			Test<ImplementInterfaceExplicitAction>(@"using System;
-class Foo : $IDisposable
-{
-}
-", @"using System;
-class Foo : IDisposable
-{
-	#region IDisposable implementation
-	void IDisposable.Dispose ()
-	{
-		throw new NotImplementedException ();
-	}
-	#endregion
-}
-");
+			var newOp = CSharpUtil.NegateRelationalOperator (node.Operator);
+			if (newOp != BinaryOperatorType.Any && node.OperatorToken.Contains (context.Location))
+				return new CodeAction (string.Format (context.TranslateString ("Negate {0}"), node.Operator),
+					script => {
+						var expr = new BinaryOperatorExpression (node.Left.Clone (), newOp, node.Right.Clone ());
+						script.Replace (node, expr);
+					});
+			return null;
 		}
+
 	}
 }
-

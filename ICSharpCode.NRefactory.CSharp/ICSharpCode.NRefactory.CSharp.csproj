@@ -41,7 +41,7 @@
     <DefineConstants>TRACE;FULL_AST</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
+    <DebugType>PdbOnly</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -254,6 +254,7 @@
     <Compile Include="Refactoring\CodeActions\CreateCustomEventImplementationAction.cs" />
     <Compile Include="Refactoring\CodeActions\CreateOverloadWithoutParameterAction.cs" />
     <Compile Include="Refactoring\CodeActions\MergeNestedIfAction.cs" />
+    <Compile Include="Refactoring\CodeActions\NegateRelationalExpressionAction.cs" />
     <Compile Include="Refactoring\CodeActions\PutInsideUsingAction.cs" />
     <Compile Include="Refactoring\CodeActions\SplitDeclarationListAction.cs" />
     <Compile Include="Refactoring\CodeActions\UseStringFormatAction.cs" />
@@ -261,14 +262,19 @@
     <Compile Include="Refactoring\CodeIssues\AccessToClosureIssues\AccessToDisposedClosureIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\AccessToClosureIssues\AccessToModifiedClosureIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\AccessToClosureIssues\LocalVariableNamePicker.cs" />
+    <Compile Include="Refactoring\CodeIssues\AssignmentMadeToSameVariableIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\BitwiseOperationOnNonFlagsEnumIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\CompareFloatWithEqualityOperatorIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\ConstantConditionIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\DoubleNegationExpressionIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ExplicitConversionInForEachIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ForControlVariableNotModifiedIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\IdenticalConditionalBranchIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\MultipleEnumerationIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantAssignmentIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantElseIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantFieldInitializerIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\RedundantTypeCastIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\UnreachableCodeIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\VariableHidesMemberIssue\LocalVariableHidesMemberIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\VariableHidesMemberIssue\ParameterHidesMemberIssue.cs" />

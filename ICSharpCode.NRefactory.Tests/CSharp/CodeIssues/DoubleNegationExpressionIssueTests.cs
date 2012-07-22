@@ -1,10 +1,10 @@
+﻿// 
+// NegativeEqualityExpressionIssueTests.cs
 // 
-// ImplementInterfaceExplicitTests.cs
-//  
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//      Mansheng Yang <lightyang0@gmail.com>
 // 
-// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2012 Mansheng Yang <lightyang0@gmail.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,34 +23,71 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using NUnit.Framework;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
 
-namespace ICSharpCode.NRefactory.CSharp.CodeActions
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+using NUnit.Framework;
+
+namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
 	[TestFixture]
-	public class ImplementInterfaceExplicitTests : ContextActionTestBase
+	public class DoubleNegationExpressionIssueTests : InspectionActionTestBase
 	{
-		[Test()]
-		public void TestSimpleInterface()
+
+		public void Test (string op, string negatedOp)
 		{
-			Test<ImplementInterfaceExplicitAction>(@"using System;
-class Foo : $IDisposable
+			var input = @"
+class TestClass
 {
-}
-", @"using System;
-class Foo : IDisposable
-{
-	#region IDisposable implementation
-	void IDisposable.Dispose ()
+	void TestMethod ()
 	{
-		throw new NotImplementedException ();
+		var x = !(1 " + op + @" 2);
 	}
-	#endregion
-}
-");
+}";
+			var output = @"
+class TestClass
+{
+	void TestMethod ()
+	{
+		var x = 1 " + negatedOp + @" 2;
+	}
+}";
+			Test<DoubleNegationExpressionIssue> (input, 1, output);
+		}
+
+		[Test]
+		public void TestEquality ()
+		{
+			Test ("==", "!=");
+		}
+
+		[Test]
+		public void TestInEquality ()
+		{
+			Test ("!=", "==");
+		}
+
+		[Test]
+		public void TestGreaterThan ()
+		{
+			Test (">", "<=");
+		}
+
+		[Test]
+		public void TestGreaterThanOrEqual ()
+		{
+			Test (">=", "<");
+		}
+
+		[Test]
+		public void TestLessThan ()
+		{
+			Test ("<", ">=");
+		}
+
+		[Test]
+		public void TestLessThanOrEqual ()
+		{
+			Test ("<=", ">");
 		}
 	}
 }
-
