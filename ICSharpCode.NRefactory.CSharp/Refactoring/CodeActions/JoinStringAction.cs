@@ -1,5 +1,5 @@
 ﻿// 
-// NegativeEqualityExpressionIssueTests.cs
+// JoinStringAction.cs
 // 
 // Author:
 //      Mansheng Yang <lightyang0@gmail.com>
@@ -24,70 +24,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using NUnit.Framework;
-
-namespace ICSharpCode.NRefactory.CSharp.CodeIssues
+namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[TestFixture]
-	public class DoubleNegationExpressionIssueTests : InspectionActionTestBase
+	[ContextAction ("Join string literal", Description = "Join string literals.")]
+	public class JoinStringAction : SpecializedCodeAction<BinaryOperatorExpression>
 	{
-
-		public void Test (string op, string negatedOp)
+		protected override CodeAction GetAction (RefactoringContext context, BinaryOperatorExpression node)
 		{
-			var input = @"
-class TestClass
-{
-	void TestMethod ()
-	{
-		var x = !(1 " + op + @" 2);
-	}
-}";
-			var output = @"
-class TestClass
-{
-	void TestMethod ()
-	{
-		var x = 1 " + negatedOp + @" 2;
-	}
-}";
-			Test<DoubleNegationExpressionIssue> (input, 1, output);
-		}
+			var left = node.Left as PrimitiveExpression;
+			var right = node.Right as PrimitiveExpression;
 
-		[Test]
-		public void TestEquality ()
-		{
-			Test ("==", "!=");
-		}
+			if (node.Operator != BinaryOperatorType.Add || left == null || right == null ||
+				!(left.Value is string) || !(right.Value is string) || !node.OperatorToken.Contains(context.Location))
+				return null;
 
-		[Test]
-		public void TestInEquality ()
-		{
-			Test ("!=", "==");
-		}
+			var isLeftVerbatim = left.LiteralValue.StartsWith ("@");
+			var isRightVerbatime = right.LiteralValue.StartsWith ("@");
+			if (isLeftVerbatim != isRightVerbatime)
+				return null;
 
-		[Test]
-		public void TestGreaterThan ()
-		{
-			Test (">", "<=");
-		}
-
-		[Test]
-		public void TestGreaterThanOrEqual ()
-		{
-			Test (">=", "<");
-		}
-
-		[Test]
-		public void TestLessThan ()
-		{
-			Test ("<", ">=");
-		}
-
-		[Test]
-		public void TestLessThanOrEqual ()
-		{
-			Test ("<=", ">");
+			return new CodeAction (context.TranslateString ("Join strings"), script => {
+				var start = context.GetOffset (left.EndLocation) - 1;
+				var end = context.GetOffset (right.StartLocation) + (isLeftVerbatim ? 2 : 1);
+				script.RemoveText (start, end - start);
+			});
 		}
 	}
 }

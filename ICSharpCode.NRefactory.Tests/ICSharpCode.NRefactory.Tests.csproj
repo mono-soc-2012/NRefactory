@@ -94,6 +94,7 @@
     <Compile Include="CSharp\CodeActions\CreateCustomEventImplementationTests.cs" />
     <Compile Include="CSharp\CodeActions\CreateOverloadWithoutParameterTests.cs" />
     <Compile Include="CSharp\CodeActions\ExtractAnonymousMethodTests.cs" />
+    <Compile Include="CSharp\CodeActions\JoinStringTests.cs" />
     <Compile Include="CSharp\CodeActions\MergeNestedIfTests.cs" />
     <Compile Include="CSharp\CodeActions\NegateRelationalExpressionTests.cs" />
     <Compile Include="CSharp\CodeActions\PutInsideUsingTests.cs" />
@@ -112,7 +113,7 @@
     <Compile Include="CSharp\CodeIssues\LocalVariableNotUsedIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\LocalVariableOnlyAssignedIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\MultipleEnumerationIssueTests.cs" />
-    <Compile Include="CSharp\CodeIssues\DoubleNegationExpressionIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\NegativeRelationalExpressionIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ParameterHidesMemberIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ParameterNotUsedIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ParameterOnlyAssignedIssueTests.cs" />
