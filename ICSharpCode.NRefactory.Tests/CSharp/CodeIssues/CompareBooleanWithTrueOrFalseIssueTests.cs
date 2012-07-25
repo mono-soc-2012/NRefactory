@@ -1,5 +1,5 @@
 ﻿// 
-// NegateRelationalExpressionAction.cs
+// CompareBooleanWithTrueOrFalseIssueTests.cs
 // 
 // Author:
 //      Mansheng Yang <lightyang0@gmail.com>
@@ -24,25 +24,64 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace ICSharpCode.NRefactory.CSharp.Refactoring
-{
-	[ContextAction ("Negate an relational expression", Description = "Negate an relational expression.")]
-	public class NegateRelationalExpressionAction : SpecializedCodeAction<BinaryOperatorExpression>
-	{
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+using NUnit.Framework;
 
-		protected override CodeAction GetAction (RefactoringContext context, BinaryOperatorExpression node)
+namespace ICSharpCode.NRefactory.CSharp.CodeIssues
+{
+	[TestFixture]
+	public class CompareBooleanWithTrueOrFalseIssueTests : InspectionActionTestBase
+	{
+		[Test]
+		public void Test ()
 		{
-			var newOp = CSharpUtil.NegateRelationalOperator (node.Operator);
-			if (newOp != BinaryOperatorType.Any && node.OperatorToken.Contains (context.Location)) {
-				var operatorToken = BinaryOperatorExpression.GetOperatorRole (node.Operator).Token;
-				return new CodeAction (string.Format (context.TranslateString ("Negate '{0}'"), operatorToken),
-					script => {
-						var expr = new BinaryOperatorExpression (node.Left.Clone (), newOp, node.Right.Clone ());
-						script.Replace (node, expr);
-					});
-			}
-			return null;
+			var input = @"
+class TestClass
+{
+	void TestMethod (bool x)
+	{
+		bool y;
+		y = x == true;
+		y = x != false;
+		y = x != true;
+		y = x == false;
+	}
+}";
+			var output = @"
+class TestClass
+{
+	void TestMethod (bool x)
+	{
+		bool y;
+		y = x;
+		y = x;
+		y = !x;
+		y = !x;
+	}
+}";
+			Test<CompareBooleanWithTrueOrFalseIssue> (input, 4, output);
 		}
 
+		[Test]
+		public void TestInsertParenthese ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod ()
+	{
+		bool y = 2 > 1 == false;
+	}
+}";
+			var output = @"
+class TestClass
+{
+	void TestMethod ()
+	{
+		bool y = !(2 > 1);
+	}
+}";
+			Test<CompareBooleanWithTrueOrFalseIssue> (input, 1, output);
+		}
 	}
 }
