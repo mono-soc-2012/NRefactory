@@ -1,5 +1,5 @@
 ﻿// 
-// CompareFloatWithEqualityOperatorIssueTests.cs
+// ExpressionIsAlwaysOfProvidedTypeIssueTests.cs
 // 
 // Author:
 //      Mansheng Yang <lightyang0@gmail.com>
@@ -30,69 +30,61 @@ using NUnit.Framework;
 namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
 	[TestFixture]
-	public class CompareFloatWithEqualityOperatorIssueTests : InspectionActionTestBase
+	public class ExpressionIsAlwaysOfProvidedTypeIssueTests : InspectionActionTestBase
 	{
-		public void Test (string inputOp, string outputOp)
+		public void Test (string variableType, string providedType)
 		{
 			var input = @"
 class TestClass
 {
-	void TestMethod ()
+	void TestMethod (" + variableType + @" x)
 	{
-		double x = 0.1;
-		bool test = x " + inputOp + @" 0.1;
+		if (x is " + providedType + @") ;
 	}
 }";
 			var output = @"
 class TestClass
 {
-	void TestMethod ()
+	void TestMethod (" + variableType + @" x)
 	{
-		double x = 0.1;
-		bool test = System.Math.Abs (x - 0.1) " + outputOp + @" EPSILON;
+		if (x != null) ;
 	}
 }";
-			Test<CompareFloatWithEqualityOperatorIssue> (input, 1, output);
+			Test<ExpressionIsAlwaysOfProvidedTypeIssue> (input, 1, output);
 		}
 
 		[Test]
-		public void TestEquality ()
+		public void TestSameType ()
 		{
-			Test ("==", "<");
+			Test ("int", "int");
 		}
 
 		[Test]
-		public void TestInequality ()
+		public void TestBaseType ()
 		{
-			Test ("!=", ">");
+			Test ("int", "object");
 		}
 
 		[Test]
-		public void TestNaN ()
+		public void TestTypeParameter ()
 		{
 			var input = @"
 class TestClass
 {
-	void TestMethod (double x, float y)
+	void TestMethod<T> (T x) where T : TestClass
 	{
-		bool test = x == System.Double.NaN;
-		bool test2 = x != double.NaN;
-		bool test3 = y == float.NaN;
-		bool test4 = x != float.NaN;
+		if (x is TestClass) ;
 	}
 }";
 			var output = @"
 class TestClass
 {
-	void TestMethod (double x, float y)
+	void TestMethod<T> (T x) where T : TestClass
 	{
-		bool test = double.IsNaN (x);
-		bool test2 = !double.IsNaN (x);
-		bool test3 = float.IsNaN (y);
-		bool test4 = !double.IsNaN (x);
+		if (x != null) ;
 	}
 }";
-			Test<CompareFloatWithEqualityOperatorIssue> (input, 4, output);
+			Test<ExpressionIsAlwaysOfProvidedTypeIssue> (input, 1, output);
 		}
 	}
 }

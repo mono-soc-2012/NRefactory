@@ -1,5 +1,5 @@
 ﻿// 
-// CompareFloatWithEqualityOperatorIssueTests.cs
+// ReferenceEqualsCalledWithValueTypeIssueTest.cs
 // 
 // Author:
 //      Mansheng Yang <lightyang0@gmail.com>
@@ -30,69 +30,45 @@ using NUnit.Framework;
 namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
 	[TestFixture]
-	public class CompareFloatWithEqualityOperatorIssueTests : InspectionActionTestBase
+	public class ReferenceEqualsCalledWithValueTypeIssueTest : InspectionActionTestBase
 	{
-		public void Test (string inputOp, string outputOp)
+		[Test]
+		public void TestValueType ()
 		{
 			var input = @"
 class TestClass
 {
-	void TestMethod ()
+	void TestMethod (int i, int j)
 	{
-		double x = 0.1;
-		bool test = x " + inputOp + @" 0.1;
+		var x = object.ReferenceEquals (i, j);
+		var x2 = ReferenceEquals (i, j);
 	}
 }";
 			var output = @"
 class TestClass
 {
-	void TestMethod ()
+	void TestMethod (int i, int j)
 	{
-		double x = 0.1;
-		bool test = System.Math.Abs (x - 0.1) " + outputOp + @" EPSILON;
+		var x = object.Equals (i, j);
+		var x2 = object.Equals (i, j);
 	}
 }";
-			Test<CompareFloatWithEqualityOperatorIssue> (input, 1, output);
+			Test<ReferenceEqualsCalledWithValueTypeIssue> (input, 2, output);
 		}
 
 		[Test]
-		public void TestEquality ()
-		{
-			Test ("==", "<");
-		}
-
-		[Test]
-		public void TestInequality ()
-		{
-			Test ("!=", ">");
-		}
-
-		[Test]
-		public void TestNaN ()
+		public void TestNoIssue ()
 		{
 			var input = @"
 class TestClass
 {
-	void TestMethod (double x, float y)
+	void TestMethod<T> (object i, T j)
 	{
-		bool test = x == System.Double.NaN;
-		bool test2 = x != double.NaN;
-		bool test3 = y == float.NaN;
-		bool test4 = x != float.NaN;
+		var x = object.ReferenceEquals (i, i);
+		var x2 = object.ReferenceEquals (j, j);
 	}
 }";
-			var output = @"
-class TestClass
-{
-	void TestMethod (double x, float y)
-	{
-		bool test = double.IsNaN (x);
-		bool test2 = !double.IsNaN (x);
-		bool test3 = float.IsNaN (y);
-		bool test4 = !double.IsNaN (x);
-	}
-}";
-			Test<CompareFloatWithEqualityOperatorIssue> (input, 4, output);
+			Test<ReferenceEqualsCalledWithValueTypeIssue> (input, 0);
 		}
 	}
 }
